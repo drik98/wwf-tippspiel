@@ -9,6 +9,7 @@ export function initFacebookSdk() {
         appId: facebookAppId,
         autoLogAppEvents: true,
         xfbml: true,
+        cookie: true,
         version: "v10.0",
       });
 
