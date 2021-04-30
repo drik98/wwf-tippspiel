@@ -1,20 +1,18 @@
 <template>
-  <div class="page">
-    <div id="nav"><router-link to="/">Home</router-link></div>
-    <div class="home">
-      <h3>Posts</h3>
-      <ul v-if="posts.length > 0">
-        <li v-for="post in posts" :key="post.id">
-          <router-link :to="`post/${post.id}`">
-            {{ post.title }}({{ post.updated_time }})
-          </router-link>
-        </li>
-      </ul>
-      <template v-else
-        >Kein aktueller Post innerhalb der letzten 90 Tage!</template
-      >
-    </div>
-  </div>
+  <v-container>
+    <h3>Posts</h3>
+    <v-spacer />
+    <v-container v-if="posts.length > 0">
+      <v-card v-for="post in posts" :key="post.id" elevation="2">
+        <v-img height="125" :src="post.picture"></v-img>
+        <v-card-title>{{ post.title }}</v-card-title>
+      </v-card>
+    </v-container>
+
+    <template v-else
+      >Kein aktueller Post innerhalb der letzten 90 Tage!</template
+    >
+  </v-container>
 </template>
 
 <script>
@@ -34,26 +32,20 @@ export default {
   },
   methods: {
     loadFeed() {
-      window.FB.api("114069245969428/feed", (response) => {
-        if (response && !response.error) {
-          this.posts = response.data.map((post) => ({
-            ...post,
-            title: post.message.split("\n")[0],
-          }));
+      window.FB.api(
+        "114069245969428/feed",
+        "GET",
+        { fields: "from,picture,comments,message,updated_time" },
+        (response) => {
+          if (response && !response.error) {
+            this.posts = response.data.map((post) => ({
+              ...post,
+              title: post.message.split("\n")[0],
+            }));
+          }
         }
-      });
+      );
     },
   },
 };
 </script>
-
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>

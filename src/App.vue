@@ -1,25 +1,45 @@
 <template>
-  <div id="app">
-    <div
-      v-if="!isUserLoggedIn"
-      class="fb-login-button"
-      data-width=""
-      data-size="large"
-      data-button-type="login_with"
-      data-layout="default"
-      data-auto-logout-link="false"
-      data-use-continue-as="true"
-    ></div>
-    <div v-else>
-      <h2>Hallo {{ user.name }}</h2>
-      <router-view />
-    </div>
-  </div>
+  <v-app>
+    <v-app-bar app color="primary" dark>
+      <div class="d-flex align-center">
+        <v-img
+          alt="WWF-Logo"
+          class="shrink mr-2"
+          contain
+          src="./assets/wwf_logo.svg"
+          transition="scale-transition"
+          width="80"
+        />
+        WWF
+      </div>
+
+      <v-spacer></v-spacer>
+
+      <div
+        v-if="!isUserLoggedIn"
+        class="fb-login-button"
+        data-width=""
+        data-size="large"
+        data-button-type="login_with"
+        data-layout="default"
+        data-auto-logout-link="false"
+        data-use-continue-as="true"
+      ></div>
+      <div v-else>
+        <h2>Hallo {{ user.name }}</h2>
+      </div>
+    </v-app-bar>
+
+    <v-main>
+      <router-view v-if="isUserLoggedIn" />
+    </v-main>
+  </v-app>
 </template>
 
 <script>
 export default {
   name: "App",
+
   data: () => ({
     user: {
       status: "unknown",
@@ -47,26 +67,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
-</style>

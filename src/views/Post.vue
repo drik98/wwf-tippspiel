@@ -5,6 +5,7 @@
       <router-link to="/about">About</router-link>
     </div>
     <div class="post">
+      <button>Auswertung starten</button>
       <h1>Post comments</h1>
       <ul>
         <li v-for="comment in comments" :key="comment.id">
