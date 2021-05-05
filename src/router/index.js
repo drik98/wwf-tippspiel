@@ -11,10 +11,10 @@ const routes = [
     component: Home,
   },
   {
-    path: "/about",
-    name: "About",
+    path: "/policy",
+    name: "Policy",
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
+      import(/* webpackChunkName: "policy" */ "../views/Policy.vue"),
   },
   {
     path: "/post/:id",
