@@ -3,7 +3,7 @@ export function initFacebookSdk() {
     // wait for facebook sdk to initialize before starting the vue app
     window.fbAsyncInit = function () {
       window.FB.init({
-        appId: process.env.FACEBOOK_APP_ID,
+        appId: process.env.VUE_APP_FACEBOOK_APP_ID,
         cookie: true,
         xfbml: true,
         version: "v10.0",

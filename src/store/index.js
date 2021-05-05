@@ -37,7 +37,7 @@ export default new Vuex.Store({
     },
     loadFeed({ commit }) {
       window.FB.api(
-        `${process.env.FACEBOOK_GROUP_ID}/feed`,
+        `${process.env.VUE_APP_FACEBOOK_GROUP_ID}/feed`,
         "GET",
         { fields: "from,picture,comments,message,updated_time" },
         (response) => {
