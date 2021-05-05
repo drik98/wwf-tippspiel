@@ -2,15 +2,14 @@ export function initFacebookSdk() {
   return new Promise((resolve) => {
     // wait for facebook sdk to initialize before starting the vue app
     window.fbAsyncInit = function () {
-      const { FB } = window;
-      FB.init({
+      window.FB.init({
         appId: process.env.FACEBOOK_APP_ID,
-        autoLogAppEvents: true,
+        cookie: true,
         xfbml: true,
         version: "v10.0",
       });
 
-      FB.AppEvents.logPageView();
+      window.FB.AppEvents.logPageView();
       resolve();
     };
 
