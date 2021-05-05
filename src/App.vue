@@ -26,44 +26,29 @@
         data-use-continue-as="true"
       ></div>
       <div v-else>
-        <h2>Hallo {{ user.name }}</h2>
+        <h2>Hallo {{ userName }}</h2>
       </div>
     </v-app-bar>
 
     <v-main>
-      <router-view v-if="isUserLoggedIn" />
+      <router-view />
     </v-main>
   </v-app>
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+
 export default {
   name: "App",
-
-  data: () => ({
-    user: {
-      status: "unknown",
-      name: null,
-    },
-  }),
   computed: {
-    isUserLoggedIn() {
-      return this.user.status === "connected";
-    },
+    ...mapGetters(["isUserLoggedIn", "userName"]),
   },
   methods: {
-    checkLoginStatus() {
-      window.FB.getLoginStatus(({ status }) => {
-        this.user.status = status;
-        this.loadUserInfo();
-      });
-    },
-    loadUserInfo() {
-      window.FB.api("/me", ({ name }) => (this.user.name = name));
-    },
+    ...mapActions(["initialize"]),
   },
   mounted() {
-    this.checkLoginStatus();
+    this.initialize();
   },
 };
 </script>

@@ -1,31 +1,45 @@
 <template>
-  <div class="page">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <div class="post">
-      <button>Auswertung starten</button>
-      <h1>Post comments</h1>
-      <ul>
-        <li v-for="comment in comments" :key="comment.id">
-          <strong>{{ comment.from.name }}</strong>
-          <ol>
-            <li
-              v-for="(tipp, index) in comment.tipps"
-              :key="`${comment.id}_${index}`"
-            >
-              {{ JSON.stringify(tipp, null, 2) }}
-            </li>
-          </ol>
-        </li>
-      </ul>
-    </div>
-  </div>
+  <v-container>
+    <h3>Kommentare zu {{ this.post.title }}</h3>
+    <v-spacer />
+    <v-timeline v-if="comments.length > 0">
+      <v-timeline-item v-for="comment in comments" :key="comment.id" fill-dot>
+        <template v-slot:icon>
+          <v-avatar>
+            <img
+              :src="`https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=${comment.from.id}&height=50&width=50&ext=1622731891&hash=AeQOnPMB92ALjgcC9Ng`"
+            />
+          </v-avatar>
+        </template>
+        <template v-slot:opposite>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <span v-bind="attrs" v-on="on">{{
+                formatDate(comment.created_time)
+              }}</span>
+            </template>
+            <p :style="{ 'white-space': 'pre-line' }">{{ comment.message }}</p>
+          </v-tooltip>
+        </template>
+        <v-card>
+          <v-card-title>{{ comment.from.name }}</v-card-title>
+          <v-card-text>
+            <v-data-table
+              dense
+              :headers="headers"
+              :items="comment.tipps"
+              item-key="index"
+              class="elevation-1"
+            ></v-data-table>
+          </v-card-text>
+        </v-card>
+      </v-timeline-item>
+    </v-timeline>
+    <template v-else>Keine Kommentare vorhanden!</template>
+  </v-container>
 </template>
-
 <script>
-const lineBeginRegEx = /^#?[0-9]*:?/;
+import { mapGetters } from "vuex";
 
 export default {
   name: "Post",
@@ -36,64 +50,37 @@ export default {
     },
   },
   data: () => ({
+    post: null,
     comments: [],
+    headers: [
+      {
+        text: "#",
+        align: "start",
+        sortable: false,
+        value: "number",
+      },
+      { text: "Tipp", value: "tipp" },
+      { text: "Via", value: "via" },
+      { text: "Punkte", value: "points" },
+    ],
   }),
   created() {
-    // fetch the data when the view is created and the data is
-    // already being observed
-    this.loadPostComments();
+    this.loadPost();
   },
   watch: {
-    // call again the method if the route changes
-    $route: "loadPostComments",
+    $route: "loadPost",
   },
   methods: {
-    loadPostComments() {
-      window.FB.api(`${this.postId}/comments`, (response) => {
-        if (response && !response.error) {
-          this.comments = response.data.map((comment) => ({
-            ...comment,
-            tipps: comment.message
-              .split("\n")
-              .map((line) => line.trim())
-              .filter((line) => line)
-              .map((line) => {
-                const values = line
-                  .toLowerCase()
-                  .split("via")
-                  .map((item) => item.trim());
-                let winning = values[0];
-                const formattedWinning = winning
-                  .replace(lineBeginRegEx, "")
-                  .trim();
-                if (formattedWinning.length > 0) {
-                  winning = formattedWinning;
-                }
-                winning = this.normalizeString(winning);
-                return {
-                  unformatted: line,
-                  winning,
-                  outcome: values[1],
-                };
-              }),
-          }));
-        }
-      });
+    loadPost() {
+      this.post = this.postById(this.postId);
+      this.comments = this.commentsByPostId(this.postId);
     },
-    normalizeString(str) {
-      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    formatDate(value) {
+      return new Date(value).toLocaleString();
     },
+  },
+  computed: {
+    ...mapGetters(["postById", "commentsByPostId"]),
   },
 };
 </script>
-
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
